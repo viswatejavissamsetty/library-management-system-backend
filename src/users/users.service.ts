@@ -27,15 +27,23 @@ export class UsersService {
       username: 'maria',
       password: 'guess',
     },
+    {
+      userId: 3,
+      username: 'viswa',
+      password: 'Test@123',
+    },
   ];
 
-  async findOne(username: string): Promise<User | undefined> {
-    return this.users.find((user) => user.username === username);
+  // async findOne(username: string): Promise<User | undefined> {
+  //   return this.users.find((user) => user.username === username);
+  // }
+  async findOne(username: string): Promise<UserDto | undefined> {
+    return this.userModel.findOne({ username }).exec();
   }
 
-  async create(createCatDto: User): Promise<UserDto> {
-    const createdCat = new this.userModel(createCatDto);
-    return createdCat.save();
+  async create(createUserDto: User): Promise<UserDto> {
+    const createdUser = new this.userModel(createUserDto);
+    return createdUser.save();
   }
 
   async findAll(): Promise<UserDto[]> {
