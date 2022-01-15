@@ -37,8 +37,14 @@ export class UsersService {
   // async findOne(username: string): Promise<User | undefined> {
   //   return this.users.find((user) => user.username === username);
   // }
-  async findOne(username: string): Promise<UserDto | undefined> {
-    return this.userModel.findOne({ username }).exec();
+
+  async findOne(username: string): Promise<User | undefined> {
+    const user = await this.userModel.findOne({ username }).exec();
+    return {
+      userId: user._id,
+      username: user.username,
+      password: user.password,
+    } as User;
   }
 
   async create(createUserDto: User): Promise<UserDto> {
@@ -47,6 +53,6 @@ export class UsersService {
   }
 
   async findAll(): Promise<UserDto[]> {
-    return this.userModel.find().exec();
+    return this.userModel.find({}, { _id: false, __v: false }).exec();
   }
 }

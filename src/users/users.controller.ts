@@ -7,8 +7,6 @@ export class UsersController {
 
   @Post('new-user')
   createUser(@Body() userData: User) {
-    console.log(userData);
-
     this.usersService.create(userData);
   }
 }
