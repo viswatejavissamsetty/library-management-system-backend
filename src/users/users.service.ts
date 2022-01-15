@@ -16,28 +16,6 @@ export class UsersService {
     private userModel: Model<User>,
   ) {}
 
-  private readonly users: User[] = [
-    {
-      userId: 1,
-      username: 'john',
-      password: 'changeme',
-    },
-    {
-      userId: 2,
-      username: 'maria',
-      password: 'guess',
-    },
-    {
-      userId: 3,
-      username: 'viswa',
-      password: 'Test@123',
-    },
-  ];
-
-  // async findOne(username: string): Promise<User | undefined> {
-  //   return this.users.find((user) => user.username === username);
-  // }
-
   async findOne(username: string): Promise<User | undefined> {
     const user = await this.userModel.findOne({ username }).exec();
     return {
@@ -52,7 +30,7 @@ export class UsersService {
     return createdUser.save();
   }
 
-  async findAll(): Promise<UserDto[]> {
+  async findAllUsers(): Promise<UserDto[]> {
     return this.userModel.find({}, { _id: false, __v: false }).exec();
   }
 }
