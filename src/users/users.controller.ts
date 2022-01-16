@@ -6,6 +6,7 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post('new-user')
+<<<<<<< HEAD
   async createUser(@Body() userData: User) {
     userData._id = userData.idCardNumber;
     try {
@@ -15,5 +16,11 @@ export class UsersController {
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
+=======
+  createUser(@Body() userData: User) {
+    console.log(userData);
+
+    this.usersService.create(userData);
+>>>>>>> parent of 944f77a (authentication done)
   }
 }

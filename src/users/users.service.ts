@@ -33,12 +33,29 @@ export class UsersService {
     private userModel: Model<User>,
   ) {}
 
-  async findOne(id: string): Promise<User | undefined> {
-    const data = await this.userModel.findOne({ _id: id }).exec();
-    // const data = await this.userModel.findById(id).exec();
-    console.log(data);
-    const user = await data.toJSON();
-    return user;
+  private readonly users: User[] = [
+    {
+      userId: 1,
+      username: 'john',
+      password: 'changeme',
+    },
+    {
+      userId: 2,
+      username: 'maria',
+      password: 'guess',
+    },
+    {
+      userId: 3,
+      username: 'viswa',
+      password: 'Test@123',
+    },
+  ];
+
+  // async findOne(username: string): Promise<User | undefined> {
+  //   return this.users.find((user) => user.username === username);
+  // }
+  async findOne(username: string): Promise<UserDto | undefined> {
+    return this.userModel.findOne({ username }).exec();
   }
 
   async create(newUser: User): Promise<UserDto> {
@@ -56,7 +73,7 @@ export class UsersService {
     }
   }
 
-  async findAllUsers(): Promise<UserDto[]> {
-    return this.userModel.find({}, { _id: false, __v: false }).exec();
+  async findAll(): Promise<UserDto[]> {
+    return this.userModel.find().exec();
   }
 }

@@ -12,28 +12,29 @@ import { AppService } from './app.service';
 import { AuthService } from './auth/auth.service';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { LocalAuthGuard } from './auth/local-auth.guard';
-import { UsersService } from './users/users.service';
 
 @Controller()
 export class AppController {
   constructor(
     private readonly appService: AppService,
     private authService: AuthService,
-    private readonly userService: UsersService,
   ) {}
+
+  @Get()
+  getHello(): string {
+    return this.appService.getHello();
+  }
+
+  @UseGuards(LocalAuthGuard)
+  @Post('auth/login')
+  async login(@Request() req) {
+    return this.authService.login(req.user);
+  }
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   getProfile(@Request() req) {
+    // console.log(req);
     return req.user;
-  }
-
-  @Post('get-uesr-data')
-  getData(@Body() auth: { secret: string }) {
-    if (auth.secret == 'admin') {
-      return this.userService.findAllUsers();
-    } else {
-      throw new NotFoundException('Cound not find creads.');
-    }
   }
 }
