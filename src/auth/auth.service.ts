@@ -10,20 +10,18 @@ export class AuthService {
   ) {}
 
   async validateUser(idCardNumber: string, password: string): Promise<any> {
-    console.log(idCardNumber, password);
     const user = await this.usersService.findOne(idCardNumber);
     console.log(user);
     if (user && user.password === password) {
-      const { password, _id, ...result } = user;
-      return result;
+      const { password, _id, ...rest } = user;
+      return rest;
     }
     return null;
   }
 
   async login(user: User) {
-    console.log(user);
     const payload = {
-      name: [user.firstName, user.lastName].join(' '),
+      name: user.firstName,
       sub: user.email,
     };
     return {
