@@ -1,12 +1,29 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { CreateUserDto as UserDto } from 'src/types/create-user';
 
 // This should be a real class/interface representing a user entity
 export type User = {
-  userId: number;
-  username: string;
+  _id: string;
+  idCardNumber: string;
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  nickName: string;
+  email: string;
   password: string;
+  mobileNumber: string;
+  addressLine1: string;
+  addressLine2: string;
+  city: string;
+  state: string;
+  village: string;
+  pincode: string;
+  country: string;
+  branch: string;
+  joiningDate: string;
+  dateOfBirth: string;
+  isLibrarian: string;
 };
 
 @Injectable()
@@ -16,18 +33,27 @@ export class UsersService {
     private userModel: Model<User>,
   ) {}
 
-  async findOne(username: string): Promise<User | undefined> {
-    const user = await this.userModel.findOne({ username }).exec();
-    return {
-      userId: user._id,
-      username: user.username,
-      password: user.password,
-    } as User;
+  async findOne(id: string): Promise<User | undefined> {
+    const data = await this.userModel.findOne({ _id: id }).exec();
+    // const data = await this.userModel.findById(id).exec();
+    console.log(data);
+    const user = await data.toJSON();
+    return user;
   }
 
-  async create(createUserDto: User): Promise<UserDto> {
-    const createdUser = new this.userModel(createUserDto);
-    return createdUser.save();
+  async create(newUser: User): Promise<UserDto> {
+    const user = await this.userModel.findById(newUser._id);
+    if (!user) {
+      try {
+        const createdUser = new this.userModel(newUser);
+        const data = await createdUser.save();
+        return data;
+      } catch (error) {
+        throw new HttpException('Invalid Data', HttpStatus.FORBIDDEN);
+      }
+    } else {
+      throw new HttpException('User already exists', HttpStatus.CONFLICT);
+    }
   }
 
   async findAllUsers(): Promise<UserDto[]> {
