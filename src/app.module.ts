@@ -6,9 +6,10 @@ import { UsersModule } from './users/users.module';
 import { DatabaseModule } from './database/database.module';
 import { ConfigModule } from '@nestjs/config';
 import { LoggerMiddleware } from './utils/logger.middleware';
+import { BooksModule } from './books/books.module';
 
 @Module({
-  imports: [AuthModule, UsersModule, DatabaseModule, ConfigModule.forRoot()],
+  imports: [AuthModule, UsersModule, DatabaseModule, ConfigModule.forRoot(), BooksModule],
   controllers: [AppController],
   providers: [AppService],
 })

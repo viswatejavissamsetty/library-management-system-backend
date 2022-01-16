@@ -47,9 +47,10 @@ export class UsersService {
   }
 
   async create(newUser: User): Promise<UserDto> {
-    const user = await this.userModel.findById(newUser._id);
+    const user = await this.userModel.findById(newUser.idCardNumber);
     if (!user) {
       try {
+        newUser._id = newUser.idCardNumber;
         const createdUser = new this.userModel(newUser);
         const data = await createdUser.save();
         return data;

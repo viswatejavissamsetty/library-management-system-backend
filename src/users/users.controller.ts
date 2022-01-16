@@ -5,6 +5,7 @@ import {
   Post,
   UseGuards,
   Request,
+  NotFoundException,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { User, UsersService } from './users.service';
@@ -27,5 +28,14 @@ export class UsersController {
   @Post('new-user')
   createUser(@Body() userData: User) {
     this.usersService.create(userData);
+  }
+
+  @Post('get-users-data')
+  getData(@Body() auth: { secret: string }) {
+    if (auth.secret == 'admin') {
+      return this.usersService.findAllUsers();
+    } else {
+      throw new NotFoundException('Cound not find creads.');
+    }
   }
 }
