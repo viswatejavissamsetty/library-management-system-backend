@@ -12,12 +12,13 @@ export class LoggerMiddleware implements NestMiddleware {
     response.on('finish', () => {
       const { statusCode } = response;
       const contentLength = response.get('content-length');
+      const currentTime = new Date().toJSON();
       fs.appendFileSync(
         'logs/requestLogger.log',
-        `${new Date().toISOString()} ${method} ${originalUrl} ${statusCode} ${contentLength} - ${userAgent} ${ip}\n`,
+        `${currentTime} ${method} ${originalUrl} ${statusCode} ${contentLength} - ${userAgent} ${ip}\n`,
       );
       this.logger.log(
-        `${new Date().toISOString()} ${method} ${originalUrl} ${statusCode} ${contentLength} - ${userAgent} ${ip}`,
+        `${currentTime} ${method} ${originalUrl} ${statusCode} ${contentLength} - ${userAgent} ${ip}`,
       );
     });
 

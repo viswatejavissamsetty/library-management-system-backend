@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  NotFoundException,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Book, BooksService } from './books.service';
 
@@ -23,6 +31,8 @@ export class BooksController {
   async createNewBook(@Body() bookData: Book) {
     try {
       return this.booksService.create(bookData);
-    } catch (error) {}
+    } catch (error) {
+      throw new NotFoundException('Cound not find creads.');
+    }
   }
 }

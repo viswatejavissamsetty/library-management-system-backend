@@ -9,7 +9,13 @@ import { LoggerMiddleware } from './utils/logger.middleware';
 import { BooksModule } from './books/books.module';
 
 @Module({
-  imports: [AuthModule, UsersModule, DatabaseModule, ConfigModule.forRoot(), BooksModule],
+  imports: [
+    AuthModule,
+    UsersModule,
+    DatabaseModule,
+    ConfigModule.forRoot(),
+    BooksModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
