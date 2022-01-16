@@ -36,7 +36,6 @@ export class UsersService {
   async findOne(id: string): Promise<User | undefined> {
     const data = await this.userModel.findOne({ _id: id }).exec();
     // const data = await this.userModel.findById(id).exec();
-    console.log(data);
     const user = await data.toJSON();
     return user;
   }
