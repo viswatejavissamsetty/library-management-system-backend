@@ -1,4 +1,12 @@
-import { Controller, Get, Post, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  UseGuards,
+  Request,
+  Body,
+  NotFoundException,
+} from '@nestjs/common';
 import { AppService } from './app.service';
 import { AuthService } from './auth/auth.service';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
@@ -25,8 +33,12 @@ export class AppController {
     return req.user;
   }
 
-  @Get('test')
-  getData() {
-    return this.userService.findAll();
+  @Post('get-uesr-data')
+  getData(@Body() auth: { secret: string }) {
+    if (auth.secret == 'admin') {
+      return this.userService.findAllUsers();
+    } else {
+      throw new NotFoundException('Cound not find creads.');
+    }
   }
 }
