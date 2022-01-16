@@ -24,6 +24,7 @@ export type User = {
   joiningDate: string;
   dateOfBirth: string;
   isLibrarian: string;
+  __v?: number;
 };
 
 @Injectable()
@@ -34,10 +35,15 @@ export class UsersService {
   ) {}
 
   async findOne(id: string): Promise<User | undefined> {
-    const data = await this.userModel.findOne({ _id: id }).exec();
-    // const data = await this.userModel.findById(id).exec();
-    const user = await data.toJSON();
-    return user;
+    const data =
+      (await this.userModel.findById(id).exec()) ||
+      (await this.userModel.findOne({ email: id }));
+    if (data) {
+      const user = await data.toJSON();
+      return user;
+    } else {
+      return null;
+    }
   }
 
   async create(newUser: User): Promise<UserDto> {

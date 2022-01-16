@@ -22,12 +22,6 @@ export class AppController {
     private readonly userService: UsersService,
   ) {}
 
-  @UseGuards(JwtAuthGuard)
-  @Get('profile')
-  getProfile(@Request() req) {
-    return req.user;
-  }
-
   @Post('get-uesr-data')
   getData(@Body() auth: { secret: string }) {
     if (auth.secret == 'admin') {
