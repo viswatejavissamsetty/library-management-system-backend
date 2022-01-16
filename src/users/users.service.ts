@@ -24,6 +24,7 @@ export type User = {
   joiningDate: string;
   dateOfBirth: string;
   isLibrarian: string;
+  __v?: number;
 };
 
 @Injectable()
@@ -33,29 +34,16 @@ export class UsersService {
     private userModel: Model<User>,
   ) {}
 
-  private readonly users: User[] = [
-    {
-      userId: 1,
-      username: 'john',
-      password: 'changeme',
-    },
-    {
-      userId: 2,
-      username: 'maria',
-      password: 'guess',
-    },
-    {
-      userId: 3,
-      username: 'viswa',
-      password: 'Test@123',
-    },
-  ];
-
-  // async findOne(username: string): Promise<User | undefined> {
-  //   return this.users.find((user) => user.username === username);
-  // }
-  async findOne(username: string): Promise<UserDto | undefined> {
-    return this.userModel.findOne({ username }).exec();
+  async findOne(id: string): Promise<User | undefined> {
+    const data =
+      (await this.userModel.findById(id).exec()) ||
+      (await this.userModel.findOne({ email: id }));
+    if (data) {
+      const user = await data.toJSON();
+      return user;
+    } else {
+      return null;
+    }
   }
 
   async create(newUser: User): Promise<UserDto> {
@@ -73,7 +61,7 @@ export class UsersService {
     }
   }
 
-  async findAll(): Promise<UserDto[]> {
+  async findAllUsers(): Promise<UserDto[]> {
     return this.userModel.find().exec();
   }
 }
