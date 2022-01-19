@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { Model } from 'mongoose';
+import { Model, UpdateQuery, UpdateWriteOpResult } from 'mongoose';
 import { CreateBookDto as BookDto } from 'src/types/create-book';
 
 export type Book = {
@@ -47,5 +47,15 @@ export class BooksService {
     } else {
       throw new HttpException('Book Already Exist', HttpStatus.CONFLICT);
     }
+  }
+
+  async updateBookCount(
+    id: string,
+    count: 1 | -1,
+  ): Promise<UpdateWriteOpResult> {
+    return this.bookModel.updateOne(
+      { _id: id },
+      { $inc: { totalNumberOfBooks: count } },
+    );
   }
 }
