@@ -5,7 +5,7 @@ import { BooksService } from 'src/books/books.service';
 import { CreateBookOrderDto as BookOrderDto } from 'src/types/create-book-order';
 import { UsersService } from 'src/users/users.service';
 
-const checkTime = 60 * 60 * 24 * 2; // sec * min * hours * days -> here calculation indicates that is was 2 days.
+const booksCheckTime = 60 * 60 * 24 * 2; // sec * min * hours * days -> here calculation indicates that is was 2 days.
 
 export type BookOrder = {
   readonly _id: string;
@@ -75,23 +75,21 @@ export class BookOrdersService {
   }
 
   async returnBook(
-    // userId: string,
-    // bookId: string,
-    // issuer: string,
     trackingId: string,
     librarianId: string,
   ): Promise<UpdateWriteOpResult> {
     const issuerDetails = await this.userService.findOne(librarianId);
     const bookDetails = await this.bookOrderModel.findById(trackingId);
     if (issuerDetails.isLibrarian) {
-      const data = await this.bookOrderModel.updateOne(
-        // { userId, bookId, issuer },
-        { _id: trackingId },
-        { status: 'RETURNED' },
+      const data = await this.bookService.updateBookCount(
+        bookDetails.bookId,
+        1,
       );
       if (data) {
-        await this.bookService.updateBookCount(bookDetails.bookId, 1);
-        return data;
+        return await this.bookOrderModel.updateOne(
+          { _id: trackingId },
+          { status: 'RETURNED' },
+        );
       }
     } else {
       throw new HttpException('Invalid User', HttpStatus.FORBIDDEN);
@@ -117,12 +115,7 @@ export class BookOrdersService {
     }
   }
 
-  // async cancelBook(bookData: BookOrder) {
   async cancelBook(id: string) {
-    // bookData.planedDate = new Date();
-    // bookData.takenDate = '';
-    // bookData.returnedDate = '';
-    // bookData.status = 'CANCELLED';
     const bookDetails = await this.bookOrderModel.findById(id);
     await this.bookService.updateBookCount(bookDetails.bookId, 1);
     const cancelBookStatus = await this.bookOrderModel.updateOne(
@@ -145,8 +138,7 @@ export class BookOrdersService {
     plannedBooks.forEach((book) => {
       const date1 = new Date(book.planedDate);
       const date2 = new Date();
-      if (date2.getTime() - date1.getTime() >= checkTime) {
-        // this.cancelBook(book);
+      if (date2.getTime() - date1.getTime() >= booksCheckTime) {
         this.cancelBook(book._id);
       }
     });

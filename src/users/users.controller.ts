@@ -30,6 +30,7 @@ export class UsersController {
     this.usersService.create(userData);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post('get-users-data')
   getData(@Body() auth: { secret: string }) {
     if (auth.secret == 'admin') {

@@ -10,8 +10,8 @@ export interface CreateBookDto extends Document {
   readonly imagePath: string;
   readonly price: number;
   readonly fine: number;
-  readonly totalNumberOfBooks: string;
-  readonly availableNumberOfBooks: string;
+  readonly totalNumberOfBooks: number;
+  readonly availableNumberOfBooks: number;
   readonly ratings: number;
   readonly category: string;
 }

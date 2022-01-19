@@ -12,8 +12,8 @@ export type Book = {
   imagePath: string;
   price: number;
   fine: number;
-  totalNumberOfBooks: string;
-  availableNumberOfBooks: string;
+  totalNumberOfBooks: number;
+  availableNumberOfBooks: number;
   ratings: number;
   category: string;
 };
@@ -52,10 +52,19 @@ export class BooksService {
   async updateBookCount(
     id: string,
     count: 1 | -1,
-  ): Promise<UpdateWriteOpResult> {
-    return this.bookModel.updateOne(
-      { _id: id },
-      { $inc: { totalNumberOfBooks: count } },
-    );
+  ): Promise<UpdateWriteOpResult | null> {
+    const book = await this.getBook(id);
+    if (
+      count == 1
+        ? book.availableNumberOfBooks < book.totalNumberOfBooks
+        : book.availableNumberOfBooks > 0
+    ) {
+      return this.bookModel.updateOne(
+        { _id: id },
+        { $inc: { availableNumberOfBooks: count } },
+      );
+    } else {
+      return null;
+    }
   }
 }
