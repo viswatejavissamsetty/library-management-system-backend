@@ -7,6 +7,7 @@ import { DatabaseModule } from './database/database.module';
 import { ConfigModule } from '@nestjs/config';
 import { LoggerMiddleware } from './utils/logger.middleware';
 import { BooksModule } from './books/books.module';
+import { BookOrdersModule } from './book-orders/book-orders.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { BooksModule } from './books/books.module';
     DatabaseModule,
     ConfigModule.forRoot(),
     BooksModule,
+    BookOrdersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
