@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { Model, UpdateQuery, UpdateWriteOpResult } from 'mongoose';
+import { Model, UpdateWriteOpResult } from 'mongoose';
 import { CreateBookDto as BookDto } from 'src/types/create-book';
 
 export type Book = {
