@@ -8,6 +8,8 @@ import { ConfigModule } from '@nestjs/config';
 import { LoggerMiddleware } from './utils/logger.middleware';
 import { BooksModule } from './books/books.module';
 import { BookOrdersModule } from './book-orders/book-orders.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -17,6 +19,8 @@ import { BookOrdersModule } from './book-orders/book-orders.module';
     ConfigModule.forRoot(),
     BooksModule,
     BookOrdersModule,
+    ScheduleModule.forRoot(),
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

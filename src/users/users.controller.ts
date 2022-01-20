@@ -6,6 +6,8 @@ import {
   UseGuards,
   Request,
   NotFoundException,
+  Param,
+  Patch,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { User, UsersService } from './users.service';
@@ -19,6 +21,7 @@ export class UsersController {
   async getProfile(@Request() req) {
     if (req.user) {
       const data = await this.usersService.findOne(req.user.idCardNumber);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { _id, password, __v, ...rest } = data;
       return rest;
     }
@@ -30,6 +33,20 @@ export class UsersController {
     this.usersService.create(userData);
   }
 
+  @Patch('change-password')
+  changePassowrd(
+    @Param() userId: string,
+    @Body()
+    formData: {
+      oldPassword: string;
+      newPassword: string;
+      reEnteredPassword: string;
+    },
+  ) {
+    this.usersService.changePassword(userId, formData);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Post('get-users-data')
   getData(@Body() auth: { secret: string }) {
     if (auth.secret == 'admin') {

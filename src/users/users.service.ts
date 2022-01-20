@@ -62,6 +62,30 @@ export class UsersService {
     }
   }
 
+  async changePassword(
+    userId: string,
+    passowrdData: {
+      oldPassword: string;
+      newPassword: string;
+      reEnteredPassword: string;
+    },
+  ) {
+    const { newPassword, oldPassword, reEnteredPassword } = passowrdData;
+    if (newPassword !== reEnteredPassword) {
+      throw new HttpException('Invalid form data', HttpStatus.NOT_ACCEPTABLE);
+    } else {
+      const userData = await this.userModel.findById(userId);
+      if (userData && userData.password === oldPassword) {
+        return this.userModel.updateOne(
+          { _id: userId },
+          { password: newPassword },
+        );
+      } else {
+        throw new HttpException('Invalid form data', HttpStatus.NOT_ACCEPTABLE);
+      }
+    }
+  }
+
   async findAllUsers(): Promise<UserDto[]> {
     return this.userModel.find().exec();
   }

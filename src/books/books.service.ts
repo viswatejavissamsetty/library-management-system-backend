@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { Model } from 'mongoose';
+import { unlinkSync } from 'fs';
+import { Model, UpdateWriteOpResult } from 'mongoose';
 import { CreateBookDto as BookDto } from 'src/types/create-book';
 
 export type Book = {
@@ -12,8 +13,8 @@ export type Book = {
   imagePath: string;
   price: number;
   fine: number;
-  totalNumberOfBooks: string;
-  availableNumberOfBooks: string;
+  totalNumberOfBooks: number;
+  availableNumberOfBooks: number;
   ratings: number;
   category: string;
 };
@@ -42,10 +43,31 @@ export class BooksService {
         const data = await createdBook.save();
         return data;
       } catch (error) {
+        unlinkSync('public/' + bookData.imagePath);
         throw new HttpException('Invalid Data', HttpStatus.FORBIDDEN);
       }
     } else {
+      unlinkSync('public/' + bookData.imagePath);
       throw new HttpException('Book Already Exist', HttpStatus.CONFLICT);
+    }
+  }
+
+  async updateBookCount(
+    id: string,
+    count: 1 | -1,
+  ): Promise<UpdateWriteOpResult | null> {
+    const book = await this.getBook(id);
+    if (
+      count == 1
+        ? book.availableNumberOfBooks < book.totalNumberOfBooks
+        : book.availableNumberOfBooks > 0
+    ) {
+      return this.bookModel.updateOne(
+        { _id: id },
+        { $inc: { availableNumberOfBooks: count } },
+      );
+    } else {
+      return null;
     }
   }
 }

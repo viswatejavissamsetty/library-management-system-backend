@@ -18,7 +18,7 @@ export const UserSchema = new mongoose.Schema({
   pincode: { type: String, required: true },
   country: { type: String, required: true },
   branch: { type: String, required: true },
-  joiningDate: { type: Date, required: true },
+  joiningDate: { type: Date, required: true, default: new Date() },
   dateOfBirth: { type: Date, required: true },
-  isLibrarian: { type: Boolean, required: true },
+  isLibrarian: { type: Boolean, required: true, default: false },
 });
