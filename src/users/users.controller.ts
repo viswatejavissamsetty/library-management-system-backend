@@ -6,6 +6,8 @@ import {
   UseGuards,
   Request,
   NotFoundException,
+  Param,
+  Patch,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { User, UsersService } from './users.service';
@@ -29,6 +31,19 @@ export class UsersController {
   @Post('new-user')
   createUser(@Body() userData: User) {
     this.usersService.create(userData);
+  }
+
+  @Patch('change-password')
+  changePassowrd(
+    @Param() userId: string,
+    @Body()
+    formData: {
+      oldPassword: string;
+      newPassword: string;
+      reEnteredPassword: string;
+    },
+  ) {
+    this.usersService.changePassword(userId, formData);
   }
 
   @UseGuards(JwtAuthGuard)

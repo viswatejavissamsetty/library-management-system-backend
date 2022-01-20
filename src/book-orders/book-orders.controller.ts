@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { BookOrder, BookOrdersService } from './book-orders.service';
 
@@ -13,31 +22,31 @@ export class BookOrdersController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('/getAllUserPlannedBooks')
+  @Get('/get-all-user-planned-books')
   async getAllUserPlannedBooks(@Query('userId') userId: string) {
     return this.bookOrderService.getAllUserPlannedBooks(userId);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('/getAllPlannedBooks')
+  @Get('/get-all-planned-books')
   async getAllPlannedBooks(@Query('userId') userId: string) {
     return this.bookOrderService.getAllPlannedBooks(userId);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('getAllUserTakenBooks')
+  @Get('get-all-user-taken-books')
   async getAllUserTakenBooks(@Query('userId') userId: string) {
     return this.bookOrderService.getAllUserTakenBooks(userId);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('getAllTakenBooks')
+  @Get('get-all-taken-books')
   async getAllTakenBooks(@Query('userId') userId: string) {
     return this.bookOrderService.getAllTakenBooks(userId);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('takeBook')
+  @Patch('take-book')
   async takeBooks(
     @Body() payload: { librarianId: string; trackingId: string },
   ) {
@@ -48,7 +57,7 @@ export class BookOrdersController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('returnBook')
+  @Patch('return-book')
   async returnBook(@Body() tackingData: { id: string; librarianId: string }) {
     return this.bookOrderService.returnBook(
       tackingData.id,
@@ -57,7 +66,7 @@ export class BookOrdersController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('cancelBook')
+  @Delete('cancel-book')
   async cancelBook(@Body() tackingData: { id: string }) {
     return this.bookOrderService.cancelBook(tackingData.id);
   }
