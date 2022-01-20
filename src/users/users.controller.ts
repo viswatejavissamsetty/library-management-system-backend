@@ -19,6 +19,7 @@ export class UsersController {
   async getProfile(@Request() req) {
     if (req.user) {
       const data = await this.usersService.findOne(req.user.idCardNumber);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { _id, password, __v, ...rest } = data;
       return rest;
     }

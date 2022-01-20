@@ -2,11 +2,16 @@ import {
   Body,
   Controller,
   Get,
-  NotFoundException,
   Post,
   Query,
   UseGuards,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { existsSync, mkdirSync } from 'fs';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Book, BooksService } from './books.service';
 
@@ -28,11 +33,34 @@ export class BooksController {
 
   @UseGuards(JwtAuthGuard)
   @Post('new-book')
-  async createNewBook(@Body() bookData: Book) {
-    try {
-      return this.booksService.create(bookData);
-    } catch (error) {
-      throw new NotFoundException('Cound not find creads.');
-    }
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: diskStorage({
+        destination: (req, file, cb) => {
+          const uploadPath = 'public/images/' + req.body.category;
+          // Create folder if doesn't exist
+          if (!existsSync(uploadPath)) {
+            mkdirSync(uploadPath);
+          }
+          cb(null, uploadPath + '/');
+        },
+        filename: (req: any, file: any, cb: any) => {
+          // Calling the callback passing the random name generated with the original name
+          cb(
+            null,
+            `${file.originalname.split('.')[0]}${new Date().getTime()}${extname(
+              file.originalname,
+            )}`,
+          );
+        },
+      }),
+    }),
+  )
+  async createNewBook(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() bookData: Book,
+  ) {
+    bookData.imagePath = (file.destination + file.filename).slice(7);
+    return this.booksService.create(bookData);
   }
 }

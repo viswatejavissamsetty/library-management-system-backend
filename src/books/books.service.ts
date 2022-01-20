@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { unlinkSync } from 'fs';
 import { Model, UpdateWriteOpResult } from 'mongoose';
 import { CreateBookDto as BookDto } from 'src/types/create-book';
 
@@ -42,9 +43,11 @@ export class BooksService {
         const data = await createdBook.save();
         return data;
       } catch (error) {
+        unlinkSync('public/' + bookData.imagePath);
         throw new HttpException('Invalid Data', HttpStatus.FORBIDDEN);
       }
     } else {
+      unlinkSync('public/' + bookData.imagePath);
       throw new HttpException('Book Already Exist', HttpStatus.CONFLICT);
     }
   }

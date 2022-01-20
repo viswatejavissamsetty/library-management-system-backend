@@ -12,6 +12,6 @@ export const BookSchema = new mongoose.Schema({
   fine: { type: Number, required: true },
   totalNumberOfBooks: { type: Number, required: true },
   availableNumberOfBooks: { type: Number, required: true },
-  ratings: { type: Number, required: true, default: null },
+  ratings: { type: Number, required: false, default: null },
   category: { type: String, required: true },
 });
