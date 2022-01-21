@@ -58,9 +58,11 @@ export class BookOrdersController {
 
   @UseGuards(JwtAuthGuard)
   @Patch('return-book')
-  async returnBook(@Body() tackingData: { id: string; librarianId: string }) {
+  async returnBook(
+    @Body() tackingData: { trackingId: string; librarianId: string },
+  ) {
     return this.bookOrderService.returnBook(
-      tackingData.id,
+      tackingData.trackingId,
       tackingData.librarianId,
     );
   }

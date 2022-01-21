@@ -6,8 +6,8 @@ import {
   UseGuards,
   Request,
   NotFoundException,
-  Param,
   Patch,
+  Query,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { User, UsersService } from './users.service';
@@ -29,13 +29,14 @@ export class UsersController {
   }
 
   @Post('new-user')
-  createUser(@Body() userData: User) {
-    this.usersService.create(userData);
+  async createUser(@Body() userData: User) {
+    return this.usersService.create(userData);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Patch('change-password')
-  changePassowrd(
-    @Param() userId: string,
+  async changePassowrd(
+    @Query('userId') userId: string,
     @Body()
     formData: {
       oldPassword: string;
@@ -43,12 +44,12 @@ export class UsersController {
       reEnteredPassword: string;
     },
   ) {
-    this.usersService.changePassword(userId, formData);
+    return this.usersService.changePassword(userId, formData);
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('get-users-data')
-  getData(@Body() auth: { secret: string }) {
+  async getData(@Body() auth: { secret: string }) {
     if (auth.secret == 'admin') {
       return this.usersService.findAllUsers();
     } else {

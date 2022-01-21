@@ -3,8 +3,8 @@ import {
   Controller,
   Delete,
   Get,
-  Param,
   Patch,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -16,14 +16,14 @@ export class NotificationsController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getUserNotifications(@Param('userId') userId: string) {
+  async getUserNotifications(@Query('userId') userId: string) {
     return this.notificationsService.getUserNotifications(userId);
   }
 
   @UseGuards(JwtAuthGuard)
   @Patch()
   async changeNotificationStatus(
-    @Param('notificationId') notificationId: string,
+    @Query('notificationId') notificationId: string,
     @Body() status: { status: 'READ' | 'UNREAD' },
   ) {
     return this.notificationsService.changeNotificationStatus(
@@ -34,7 +34,7 @@ export class NotificationsController {
 
   @UseGuards(JwtAuthGuard)
   @Delete()
-  async deleteNotification(@Param('notificationId') notificationId: string) {
+  async deleteNotification(@Query('notificationId') notificationId: string) {
     return this.notificationsService.deleteNotification(notificationId);
   }
 }

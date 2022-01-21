@@ -64,24 +64,35 @@ export class UsersService {
 
   async changePassword(
     userId: string,
-    passowrdData: {
+    passowordData: {
       oldPassword: string;
       newPassword: string;
       reEnteredPassword: string;
     },
   ) {
-    const { newPassword, oldPassword, reEnteredPassword } = passowrdData;
+    const { oldPassword, newPassword, reEnteredPassword } = passowordData;
     if (newPassword !== reEnteredPassword) {
       throw new HttpException('Invalid form data', HttpStatus.NOT_ACCEPTABLE);
     } else {
       const userData = await this.userModel.findById(userId);
       if (userData && userData.password === oldPassword) {
-        return this.userModel.updateOne(
+        const data = await this.userModel.updateOne(
           { _id: userId },
           { password: newPassword },
         );
+        if (data.modifiedCount != 0) {
+          throw new HttpException('Update succesfull', HttpStatus.OK);
+        } else {
+          throw new HttpException(
+            'Unable to update your password',
+            HttpStatus.NOT_MODIFIED,
+          );
+        }
       } else {
-        throw new HttpException('Invalid form data', HttpStatus.NOT_ACCEPTABLE);
+        throw new HttpException(
+          'Password you entered was incorrect',
+          HttpStatus.NOT_ACCEPTABLE,
+        );
       }
     }
   }

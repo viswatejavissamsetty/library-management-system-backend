@@ -44,7 +44,7 @@ export class NotificationsService {
     status: 'READ' | 'UNREAD',
   ): Promise<UpdateWriteOpResult> {
     return this.notificationModal
-      .updateOne({ _id: notificationId, status: 'READ' }, { status })
+      .updateOne({ _id: notificationId }, { status })
       .exec();
   }
 

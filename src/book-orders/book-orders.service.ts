@@ -70,6 +70,14 @@ export class BookOrdersService {
       bookId: newData.bookId,
       status: { $in: ['PLANNED', 'TAKEN'] },
     });
+    const userDetails = await this.userService.findOne(newData.userId);
+
+    if (!userDetails) {
+      throw new HttpException(
+        `Invalid user ${newData.userId}`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
 
     if (bookOrderDetailsCount == 0) {
       newData.planedDate = new Date();
@@ -111,10 +119,14 @@ export class BookOrdersService {
           bookOrderDetails.userId,
           `Your book ${bookDetails.bookTitle} has been returned to library`,
         );
-        return await this.bookOrderModel.updateOne(
-          { _id: trackingId },
+        const updateData = await this.bookOrderModel.updateOne(
+          { _id: trackingId, status: 'TAKEN' },
           { status: 'RETURNED' },
         );
+        if (updateData.modifiedCount == 0) {
+          await this.bookService.updateBookCount(bookOrderDetails.bookId, -1);
+        }
+        return updateData;
       }
     } else {
       throw new HttpException('Invalid User', HttpStatus.FORBIDDEN);
@@ -136,7 +148,7 @@ export class BookOrdersService {
         }`,
       );
       return this.bookOrderModel.updateOne(
-        { _id: trackingId },
+        { _id: trackingId, status: 'PLANNED' },
         {
           takenDate: new Date(),
           returnedDate: date,

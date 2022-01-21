@@ -27,7 +27,7 @@ export class BooksController {
 
   @UseGuards(JwtAuthGuard)
   @Get('book')
-  async getBook(@Query() bookId: string) {
+  async getBook(@Query('bookId') bookId: string) {
     return this.booksService.getBook(bookId);
   }
 
