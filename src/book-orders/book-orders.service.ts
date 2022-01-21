@@ -71,7 +71,7 @@ export class BookOrdersService {
       status: { $in: ['PLANNED', 'TAKEN'] },
     });
 
-    if (bookOrderDetailsCount) {
+    if (bookOrderDetailsCount == 0) {
       newData.planedDate = new Date();
       newData.takenDate = new Date(0);
       newData.returnedDate = new Date(0);
