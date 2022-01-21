@@ -65,20 +65,32 @@ export class BookOrdersService {
 
   async planToTakeBook(newData: BookOrder) {
     const bookDetails = await this.bookService.getBook(newData.bookId);
+    const bookOrderDetailsCount = await this.bookOrderModel.countDocuments({
+      userId: newData.userId,
+      bookId: newData.bookId,
+      status: { $in: ['PLANNED', 'TAKEN'] },
+    });
 
-    newData.planedDate = new Date();
-    newData.takenDate = new Date(0);
-    newData.returnedDate = new Date(0);
-    newData.status = 'PLANNED';
-    newData.fine = bookDetails.fine;
-    const createNewBookData = new this.bookOrderModel(newData);
-    const data = await createNewBookData.save();
-    await this.notificationsService.createNewNotification(
-      newData.userId,
-      `Your book ${bookDetails.bookTitle} has been registered for Plan`,
-    );
-    await this.bookService.updateBookCount(newData.bookId, -1);
-    return data;
+    if (bookOrderDetailsCount) {
+      newData.planedDate = new Date();
+      newData.takenDate = new Date(0);
+      newData.returnedDate = new Date(0);
+      newData.status = 'PLANNED';
+      newData.fine = bookDetails.fine;
+      const createNewBookData = new this.bookOrderModel(newData);
+      const data = await createNewBookData.save();
+      await this.notificationsService.createNewNotification(
+        newData.userId,
+        `Your book ${bookDetails.bookTitle} has been registered for Plan`,
+      );
+      await this.bookService.updateBookCount(newData.bookId, -1);
+      return data;
+    } else {
+      throw new HttpException(
+        `You have already taken or booked this book (${bookDetails.bookTitle}), you are unable to take another book until you return it.`,
+        HttpStatus.CONFLICT,
+      );
+    }
   }
 
   async returnBook(
