@@ -37,7 +37,7 @@ export class BooksController {
     FileInterceptor('image', {
       storage: diskStorage({
         destination: (req, file, cb) => {
-          const uploadPath = 'public/images/' + req.body.category;
+          const uploadPath = 'public/images/books/' + req.body.category;
           // Create folder if doesn't exist
           if (!existsSync(uploadPath)) {
             mkdirSync(uploadPath);
