@@ -1,0 +1,3 @@
+
+db.notifications.find({"userId": "16JR1A04H3"})
+db.notifications.find({})

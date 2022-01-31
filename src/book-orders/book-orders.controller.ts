@@ -69,7 +69,7 @@ export class BookOrdersController {
 
   @UseGuards(JwtAuthGuard)
   @Delete('cancel-book')
-  async cancelBook(@Body() tackingData: { id: string }) {
-    return this.bookOrderService.cancelBook(tackingData.id);
+  async cancelBook(@Query('id') id: string) {
+    return this.bookOrderService.cancelBook(id);
   }
 }
