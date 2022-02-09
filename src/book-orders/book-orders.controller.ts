@@ -36,7 +36,7 @@ export class BookOrdersController {
   @UseGuards(JwtAuthGuard)
   @Get('get-all-user-taken-books')
   async getAllUserTakenBooks(@Query('userId') userId: string) {
-    return this.bookOrderService.getAllUserTakenBooks(userId);
+    return await this.bookOrderService.getAllUserTakenBooks(userId);
   }
 
   @UseGuards(JwtAuthGuard)

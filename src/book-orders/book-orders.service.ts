@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import * as moment from 'moment';
 import { Model, UpdateWriteOpResult } from 'mongoose';
 import { BooksService } from 'src/books/books.service';
 import { NotificationsService } from 'src/notifications/notifications.service';
@@ -47,14 +48,32 @@ export class BookOrdersService {
   async getAllTakenBooks(id: string): Promise<BookOrderDto[]> {
     const user = await this.userService.findOne(id);
     if (user.isLibrarian) {
-      return this.bookOrderModel.find({ status: 'TAKEN' });
+      const data = await this.bookOrderModel.find({ status: 'TAKEN' });
+      return data.map((takenBook) => {
+        const dateDiff = moment().diff(moment(takenBook.returnedDate), 'days');
+        let fine = 0;
+        if (dateDiff > 0) {
+          fine = takenBook.fine * dateDiff;
+        }
+        takenBook.fine = fine;
+        return takenBook;
+      });
     } else {
       throw new HttpException('Invalid User', HttpStatus.FORBIDDEN);
     }
   }
 
   async getAllUserTakenBooks(userId: string): Promise<BookOrderDto[]> {
-    return this.bookOrderModel.find({ userId, status: 'TAKEN' });
+    const data = await this.bookOrderModel.find({ userId, status: 'TAKEN' });
+    return data.map((takenBook) => {
+      const dateDiff = moment().diff(moment(takenBook.returnedDate), 'days');
+      let fine = 0;
+      if (dateDiff > 0) {
+        fine = takenBook.fine * dateDiff;
+      }
+      takenBook.fine = fine;
+      return takenBook;
+    });
   }
 
   async getAllReturnedBooks(): Promise<BookOrderDto[]> {
@@ -82,7 +101,7 @@ export class BookOrdersService {
     }
 
     if (bookOrderDetailsCount == 0) {
-      newData.planedDate = new Date();
+      newData.planedDate = moment().toDate();
       newData.takenDate = new Date(0);
       newData.returnedDate = new Date(0);
       newData.status = 'PLANNED';
