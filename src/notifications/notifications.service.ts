@@ -67,8 +67,7 @@ export class NotificationsService {
     }
   }
 
-  // TODO: need to change this 5 minutes to every day at mid night.
-  @Cron(CronExpression.EVERY_5_MINUTES)
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async handleCron() {
     const notifications = await this.notificationModal.find({
       status: 'READ',
