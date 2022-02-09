@@ -25,6 +25,14 @@ export class NotificationsService {
     return this.notificationModal.find({ userId });
   }
 
+  async getAllUserUnreadNotificationsCount(userId: string): Promise<number> {
+    const notifications = await this.notificationModal.find({
+      userId,
+      status: 'UNREAD',
+    });
+    return notifications.length;
+  }
+
   async createNewNotification(
     userId: string,
     message: string,

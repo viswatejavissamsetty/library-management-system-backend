@@ -21,6 +21,12 @@ export class NotificationsController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('count')
+  async getAllUserUnreadNotificationsCount(@Query('userId') userId: string) {
+    return this.notificationsService.getAllUserUnreadNotificationsCount(userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Patch()
   async changeNotificationStatus(
     @Query('notificationId') notificationId: string,

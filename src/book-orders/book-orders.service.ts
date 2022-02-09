@@ -12,12 +12,14 @@ export type BookOrder = {
   readonly _id: string;
   userId: string;
   bookId: string;
+  bookName: string;
   planedDate: Date;
   takenDate: Date | string;
   returnedDate: Date | string;
   status: string;
   fine: number;
   issuer: string;
+  issuerName: string;
 };
 
 @Injectable()
@@ -85,6 +87,7 @@ export class BookOrdersService {
       newData.returnedDate = new Date(0);
       newData.status = 'PLANNED';
       newData.fine = bookDetails.fine;
+      newData.bookName = bookDetails.bookTitle;
       const createNewBookData = new this.bookOrderModel(newData);
       const data = await createNewBookData.save();
       await this.notificationsService.createNewNotification(
@@ -154,6 +157,7 @@ export class BookOrdersService {
           returnedDate: date,
           status: 'TAKEN',
           issuer: librarianId,
+          issuerName: user.nickName || user.firstName + user.lastName,
         },
       );
     } else {
