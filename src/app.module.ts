@@ -16,7 +16,9 @@ import { NotificationsModule } from './notifications/notifications.module';
     AuthModule,
     UsersModule,
     DatabaseModule,
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     BooksModule,
     BookOrdersModule,
     ScheduleModule.forRoot(),

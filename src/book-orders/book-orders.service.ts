@@ -192,7 +192,7 @@ export class BookOrdersService {
     await this.notificationsService.createNewNotification(
       bookOrderDetails.userId,
       flag
-        ? `Your book ${bookDetails.bookTitle} has been cancelled by you`
+        ? `Your book ${bookDetails.bookTitle} has been cancelled`
         : `Your book ${bookDetails.bookTitle} has been auto cancelled by system`,
     );
     const cancelBookStatus = await this.bookOrderModel.updateOne(
