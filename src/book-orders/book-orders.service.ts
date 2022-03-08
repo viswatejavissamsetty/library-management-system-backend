@@ -242,8 +242,7 @@ export class BookOrdersService {
   }
 
   // @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
-  // @Cron(CronExpression.EVERY_MINUTE)
-  @Cron(CronExpression.EVERY_10_SECONDS)
+  @Cron(CronExpression.EVERY_10_MINUTES)
   async handleCronJobForTakenBookWarning() {
     const takenBooks = await this.getAllUserTakenBooksCronProcess();
     takenBooks.forEach(async (book) => {
