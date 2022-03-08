@@ -7,7 +7,20 @@ import { NotificationsService } from 'src/notifications/notifications.service';
 import { CreateBookOrderDto as BookOrderDto } from 'src/types/create-book-order';
 import { UsersService } from 'src/users/users.service';
 
-const booksCheckTime = 60 * 60 * 24 * 2; // sec * min * hours * days -> here calculation indicates that is was 2 days.
+// All default constants
+const booksCheckTime = {
+  days: 0,
+  hours: 0,
+  minutes: 1,
+  seconds: 0,
+};
+const returnTime = {
+  days: 0,
+  hours: 0,
+  minutes: 5,
+  seconds: 0,
+};
+const fineIntervalUnits: 'days' | 'hours' | 'minutes' | 'seconds' = 'minutes';
 
 export type BookOrder = {
   readonly _id: string;
@@ -161,8 +174,8 @@ export class BookOrdersService {
     const bookDetails = await this.bookService.getBook(bookOrderDetails.bookId);
 
     if (user && user.isLibrarian) {
-      const date = new Date();
-      date.setDate(date.getDate() + 15);
+      const returnDate = moment();
+      returnDate.add(returnTime);
       await this.notificationsService.createNewNotification(
         bookOrderDetails.userId,
         `Your book ${bookDetails.bookTitle} has been Taken from library by ${
@@ -173,7 +186,7 @@ export class BookOrdersService {
         { _id: trackingId, status: 'PLANNED' },
         {
           takenDate: new Date(),
-          returnedDate: date,
+          returnedDate: returnDate,
           status: 'TAKEN',
           issuer: librarianId,
           issuerName: user.nickName || user.firstName + user.lastName,
@@ -209,38 +222,40 @@ export class BookOrdersService {
   }
 
   private async getAllUserTakenBooksCronProcess(): Promise<BookOrderDto[]> {
-    return this.bookOrderModel.find({ status: 'PLANNED' });
+    return this.bookOrderModel.find({ status: 'TAKEN' });
   }
 
-  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
-  async handleCronJob1() {
+  // @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  @Cron(CronExpression.EVERY_MINUTE)
+  async handleCronJobForPlannedBooks() {
     const plannedBooks = await this.getAllUserPlannedBooksCronProcess();
-    plannedBooks.forEach((book) => {
-      const date1 = new Date(book.planedDate);
-      const date2 = new Date();
-      if (date2.getTime() - date1.getTime() >= booksCheckTime) {
+    plannedBooks.forEach(async (book) => {
+      const date1 = moment(book.planedDate);
+      const date2 = moment();
+      if (
+        date2.diff(date1, 'seconds') >=
+        moment.duration(booksCheckTime).asSeconds()
+      ) {
         this.cancelBook(book._id, false);
       }
     });
   }
 
-  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
-  async handleCronJob2() {
-    const plannedBooks = await this.getAllUserTakenBooksCronProcess();
-    const one_day = 60 * 60 * 24;
-    plannedBooks.forEach(async (book) => {
-      const currentDate = new Date();
-      const returnDate = new Date(book.returnedDate);
-      if (returnDate.getTime() >= currentDate.getTime()) {
+  // @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  // @Cron(CronExpression.EVERY_MINUTE)
+  @Cron(CronExpression.EVERY_10_SECONDS)
+  async handleCronJobForTakenBookWarning() {
+    const takenBooks = await this.getAllUserTakenBooksCronProcess();
+    takenBooks.forEach(async (book) => {
+      const returnDate = moment(book.returnedDate);
+      if (returnDate.isBefore()) {
         const bookDetails = await this.bookService.getBook(book.bookId);
         this.notificationsService.createNewNotification(
           book.userId,
           `You have due for book ${bookDetails.bookTitle} since ${
             book.returnedDate
           } and your fine is ${
-            (book.fine *
-              Math.round(currentDate.getTime() - returnDate.getTime())) /
-            one_day
+            book.fine * moment(returnDate).diff(moment(), fineIntervalUnits)
           }`,
           'HIGH',
         );
