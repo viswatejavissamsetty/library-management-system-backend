@@ -255,7 +255,7 @@ export class BookOrdersService {
           `You have due for book ${bookDetails.bookTitle} since ${
             book.returnedDate
           } and your fine is ${
-            book.fine * moment(returnDate).diff(moment(), fineIntervalUnits)
+            book.fine * moment().diff(moment(returnDate), fineIntervalUnits)
           }`,
           'HIGH',
         );
