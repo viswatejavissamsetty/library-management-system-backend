@@ -1,11 +1,13 @@
 import * as mongoose from 'mongoose';
 
 const databaseDetails = {
-  username: 'viswa',
-  password: 'viswa123',
+  username: 'venu',
+  password: 'Kingrockz',
   databaseName: 'library-management-system',
-  cluster: 'n6vlu',
+  cluster: 'vgpzt',
 };
+
+console.log(databaseDetails);
 
 const connectionString = `mongodb+srv://${databaseDetails.username}:${databaseDetails.password}@cluster0.${databaseDetails.cluster}.mongodb.net/${databaseDetails.databaseName}?retryWrites=true&w=majority`;
 
