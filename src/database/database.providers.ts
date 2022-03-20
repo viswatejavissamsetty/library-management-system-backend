@@ -7,9 +7,11 @@ const databaseDetails = {
   cluster: 'vgpzt',
 };
 
-console.log(databaseDetails);
+// console.log(databaseDetails);
 
 const connectionString = `mongodb+srv://${databaseDetails.username}:${databaseDetails.password}@cluster0.${databaseDetails.cluster}.mongodb.net/${databaseDetails.databaseName}?retryWrites=true&w=majority`;
+
+console.log(connectionString);
 
 export const databaseProviders = [
   {
